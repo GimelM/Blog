@@ -1,9 +1,7 @@
 from distutils.text_file import TextFile
 from django.db import models
+from django.shortcuts import reverse
 
-
-
-    
 class Post(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
@@ -16,6 +14,10 @@ class Post(models.Model):
     def __str__(self):
         return self.title
     
+    def get_absolute_url(self):
+        return reverse("detail", kwargs={"slug": self.slug})
+    
+    
 class Comment(models.Model):
 
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
@@ -24,6 +26,18 @@ class Comment(models.Model):
     
     def __str__(self):
         return self.post
+    
+    @property
+    def get_comment_count(self):
+        comment_count = self.comment_set.all().count()
+        
+    @property
+    def get_like_count(self):
+        like_count = self.like_set.all().count()
+    
+    @property
+    def get_view_count (self):
+        view_count = self.view_set.all().count()
 
 class PostView(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
